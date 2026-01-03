@@ -101,7 +101,7 @@ void log_message(const char *fmt, ...) {
     pthread_mutex_lock(&app_state.chat_mutex);
     
     time_t rawtime;
-    struct tm *timeinfo;
+    const struct tm *timeinfo;
     char timestamp[12];
     time(&rawtime);
     timeinfo = localtime(&rawtime);
