@@ -12,7 +12,8 @@
  *   username=user
  *   port=8080
  *
- * Returns 1 on success, 0 on failure
+ * Returns 1 on success (only if BOTH username and port are present),
+ * 0 on failure (including when only one of them is configured).
  */
 int load_config_file(char *username, int *port) {
     FILE *file = fopen("lume.conf", "r");
