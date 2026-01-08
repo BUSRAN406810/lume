@@ -186,12 +186,22 @@ void show_help() {
     wattron(app_state.win_chat, COLOR_PAIR(3));
     wprintw(app_state.win_chat, "  /file <path>");
     wattroff(app_state.win_chat, COLOR_PAIR(3));
-    wprintw(app_state.win_chat, "  - Send a file to the selected peer\n");
+    wprintw(app_state.win_chat, "\t \t- Send a file to the selected peer\n");
+
+    wattron(app_state.win_chat, COLOR_PAIR(3));
+    wprintw(app_state.win_chat, "  /accept");
+    wattroff(app_state.win_chat, COLOR_PAIR(3));
+    wprintw(app_state.win_chat, "\t \t- Accept an incoming file transfer\n");
+
+    wattron(app_state.win_chat, COLOR_PAIR(3));
+    wprintw(app_state.win_chat, "  /reject");
+    wattroff(app_state.win_chat, COLOR_PAIR(3));
+    wprintw(app_state.win_chat, "\t \t- Reject an incoming file transfer\n");
 
     wattron(app_state.win_chat, COLOR_PAIR(3));
     wprintw(app_state.win_chat, "  /help");
     wattroff(app_state.win_chat, COLOR_PAIR(3));
-    wprintw(app_state.win_chat, "         - Show this help message\n");
+    wprintw(app_state.win_chat, "\t \t \t- Show this help message\n");
 
     wprintw(app_state.win_chat, "\n");
 
@@ -204,12 +214,12 @@ void show_help() {
     wattron(app_state.win_chat, COLOR_PAIR(4));
     wprintw(app_state.win_chat, "  UP/DOWN");
     wattroff(app_state.win_chat, COLOR_PAIR(4));
-    wprintw(app_state.win_chat, "       - Select peer\n");
+    wprintw(app_state.win_chat, "\t \t- Select peer\n");
 
     wattron(app_state.win_chat, COLOR_PAIR(4));
     wprintw(app_state.win_chat, "  ESC");
     wattroff(app_state.win_chat, COLOR_PAIR(4));
-    wprintw(app_state.win_chat, "           - Quit\n");
+    wprintw(app_state.win_chat, "\t \t \t- Quit\n");
 
     // Add spacing after help message
     wprintw(app_state.win_chat, "\n");
