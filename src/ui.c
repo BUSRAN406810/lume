@@ -78,7 +78,11 @@ void draw_interface() {
         if (app_state.selected_peer_index >= app_state.peer_count) app_state.selected_peer_index = 0;
 
         Peer selected = app_state.peers[app_state.selected_peer_index];
-        char *ip_str = inet_ntoa(selected.ip_addr);
+        char ip_str[INET_ADDRSTRLEN];
+        if (inet_ntop(AF_INET, &selected.ip_addr, ip_str, sizeof(ip_str)) == NULL) {
+            strncpy(ip_str, "?", sizeof(ip_str));
+            ip_str[sizeof(ip_str) - 1] = '\0';
+        }
 
         wattron(app_state.win_header, COLOR_PAIR(3));
 
