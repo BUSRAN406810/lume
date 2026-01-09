@@ -137,17 +137,24 @@ void *beacon_receiver(void *arg) {
                     break;
                 }
             }
+            int newly_found = 0;
+            char new_peer_name[USERNAME_LEN];
             if (!found && app_state.peer_count < MAX_PEERS) {
                 Peer new_peer;
-                memset(new_peer.username, 0, USERNAME_LEN);
+                memset(&new_peer, 0, sizeof(new_peer));
                 strncpy(new_peer.username, packet.username, USERNAME_LEN - 1);
                 new_peer.ip_addr = sender_addr.sin_addr;
                 new_peer.tcp_port = packet.tcp_port;
                 new_peer.last_seen = time(NULL);
                 app_state.peers[app_state.peer_count++] = new_peer;
-                log_message("New peer discovered: %s", new_peer.username);
+                strncpy(new_peer_name, new_peer.username, USERNAME_LEN - 1);
+                new_peer_name[USERNAME_LEN - 1] = '\0';
+                newly_found = 1;
             }
             pthread_mutex_unlock(&app_state.peer_mutex);
+            if (newly_found) {
+                log_message("New peer discovered: %s", new_peer_name);
+            }
         }
     }
 

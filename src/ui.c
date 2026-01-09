@@ -38,8 +38,12 @@ void init_ui() {
 
     scrollok(app_state.win_chat, TRUE);
 
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&app_state.peer_mutex, NULL);
-    pthread_mutex_init(&app_state.chat_mutex, NULL);
+    pthread_mutex_init(&app_state.chat_mutex, &attr);
+    pthread_mutexattr_destroy(&attr);
 
     app_state.peer_count = 0;
     app_state.selected_peer_index = -1;
@@ -65,7 +69,7 @@ void cleanup_ui() {
 void draw_interface() {
     pthread_mutex_lock(&app_state.peer_mutex);
 
-    wclear(app_state.win_header);
+    werase(app_state.win_header);
     box(app_state.win_header, 0, 0);
 
     int max_y, max_x;
@@ -117,17 +121,15 @@ void draw_interface() {
         mvwprintw(app_state.win_header, 1, scan_col, "%s", scan_msg);
         wattroff(app_state.win_header, COLOR_PAIR(2));
     }
-    wrefresh(app_state.win_header);
-
+    wnoutrefresh(app_state.win_header);
     pthread_mutex_unlock(&app_state.peer_mutex);
 
     box(app_state.win_input, 0, 0);
     mvwprintw(app_state.win_input, 1, 2, "> ");
-    wrefresh(app_state.win_input);
+    wnoutrefresh(app_state.win_input);
 
-    pthread_mutex_lock(&app_state.chat_mutex);
-    wrefresh(app_state.win_chat);
-    pthread_mutex_unlock(&app_state.chat_mutex);
+    wnoutrefresh(app_state.win_chat);
+    doupdate();
 }
 
 void log_message(const char *fmt, ...) {
@@ -161,7 +163,8 @@ void log_message(const char *fmt, ...) {
 
     wattroff(app_state.win_chat, COLOR_PAIR(color));
 
-    wrefresh(app_state.win_chat);
+    wnoutrefresh(app_state.win_chat);
+    doupdate();
     pthread_mutex_unlock(&app_state.chat_mutex);
 }
 
@@ -286,16 +289,19 @@ void handle_input() {
     int input_pos = 0;
     memset(input_buf, 0, sizeof(input_buf));
 
-    nodelay(app_state.win_input, TRUE);
+    wtimeout(app_state.win_input, 100);
     keypad(app_state.win_input, TRUE);
 
     while (app_state.running) {
+        pthread_mutex_lock(&app_state.chat_mutex);
+        
         draw_interface();
-
         mvwprintw(app_state.win_input, 1, 4, "%s", input_buf);
-        wrefresh(app_state.win_input);
+        wnoutrefresh(app_state.win_input);
+        doupdate();
 
         int ch = wgetch(app_state.win_input);
+        
         if (ch != ERR) {
             if (ch == KEY_UP) {
                 pthread_mutex_lock(&app_state.peer_mutex);
@@ -324,12 +330,11 @@ void handle_input() {
                     }
                     memset(input_buf, 0, sizeof(input_buf));
                     input_pos = 0;
-                    wclear(app_state.win_input);
+                    werase(app_state.win_input);
                 }
             } else if (ch == KEY_BACKSPACE || ch == 127) {
                 if (input_pos > 0) {
                     input_buf[--input_pos] = '\0';
-                    mvwprintw(app_state.win_input, 1, 4 + input_pos, " ");
                 }
             } else if (input_pos < 255 && ch >= 32 && ch <= 126) {
                 input_buf[input_pos++] = ch;
@@ -338,6 +343,6 @@ void handle_input() {
                 app_state.running = 0;
             }
         }
-        usleep(10000);
+        pthread_mutex_unlock(&app_state.chat_mutex);
     }
 }
