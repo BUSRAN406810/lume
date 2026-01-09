@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <ncurses.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <arpa/inet.h>
 #include "../include/ui.h"
 
@@ -69,9 +70,9 @@ void draw_interface() {
 
     // Display local user info with IP address
     mvwprintw(app_state.win_header, 1, 2, "Lume - %s [%s:%d]",
-              app_state.local_username,
-              app_state.local_ip,
-              app_state.local_tcp_port);
+            app_state.local_username,
+            app_state.local_ip,
+            app_state.local_tcp_port);
 
     if (app_state.peer_count > 0) {
         if (app_state.selected_peer_index == -1) app_state.selected_peer_index = 0;
@@ -88,9 +89,9 @@ void draw_interface() {
 
         // Calculate length of local user info to prevent overlap
         int local_info_len = snprintf(NULL, 0, "Lume - %s [%s:%d]",
-                                      app_state.local_username,
-                                      app_state.local_ip,
-                                      app_state.local_tcp_port);
+                app_state.local_username,
+                app_state.local_ip,
+                app_state.local_tcp_port);
 
         // Position peer info with safe spacing (at least 5 chars gap)
         int peer_col = local_info_len + 7;
@@ -101,11 +102,11 @@ void draw_interface() {
         }
 
         mvwprintw(app_state.win_header, 1, peer_col, "To: %s [%s:%d] (%d/%d)",
-            selected.username,
-            ip_str,
-            selected.tcp_port,
-            app_state.selected_peer_index + 1,
-            app_state.peer_count);
+                selected.username,
+                ip_str,
+                selected.tcp_port,
+                app_state.selected_peer_index + 1,
+                app_state.peer_count);
         wattroff(app_state.win_header, COLOR_PAIR(3));
     } else {
         wattron(app_state.win_header, COLOR_PAIR(2));
@@ -228,19 +229,24 @@ void handle_input() {
         wrefresh(app_state.win_input);
 
         int ch = wgetch(app_state.win_input);
+
         if (ch != ERR) {
             if (ch == KEY_UP) {
                 pthread_mutex_lock(&app_state.peer_mutex);
                 if (app_state.peer_count > 0) {
-                    app_state.selected_peer_index = (app_state.selected_peer_index + 1) % app_state.peer_count;
+                    app_state.selected_peer_index =
+                        (app_state.selected_peer_index + 1) % app_state.peer_count;
                 }
                 pthread_mutex_unlock(&app_state.peer_mutex);
+
             } else if (ch == KEY_DOWN) {
                 pthread_mutex_lock(&app_state.peer_mutex);
                 if (app_state.peer_count > 0) {
-                    app_state.selected_peer_index = (app_state.selected_peer_index - 1 + app_state.peer_count) % app_state.peer_count;
+                    app_state.selected_peer_index =
+                        (app_state.selected_peer_index - 1 + app_state.peer_count) % app_state.peer_count;
                 }
                 pthread_mutex_unlock(&app_state.peer_mutex);
+
             } else if (ch == '\n') {
                 if (input_pos > 0) {
                     if (strcmp(input_buf, "/help") == 0) {
@@ -254,18 +260,60 @@ void handle_input() {
                     input_pos = 0;
                     wclear(app_state.win_input);
                 }
+
             } else if (ch == KEY_BACKSPACE || ch == 127) {
                 if (input_pos > 0) {
                     input_buf[--input_pos] = '\0';
                     mvwprintw(app_state.win_input, 1, 4 + input_pos, " ");
                 }
+
+            } else if (ch == '\t') {
+                // Basic autocomplete for "/file <prefix>"
+                if (strncmp(input_buf, "/file ", 6) != 0) {
+                    continue;
+                }
+
+                const char *prefix = input_buf + 6;
+                size_t prefix_len = strlen(prefix);
+
+                DIR *dir = opendir(".");
+                if (!dir) {
+                    continue;
+                }
+
+                struct dirent *entry;
+                const char *match = NULL;
+
+                while ((entry = readdir(dir)) != NULL) {
+                    if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
+                        if (match != NULL) {
+                            // More than one match → abort
+                            match = NULL;
+                            break;
+                        }
+                        match = entry->d_name;
+                    }
+                }
+                closedir(dir);
+
+                if (match != NULL) {
+                    const char *suffix = match + prefix_len;
+                    size_t suffix_len = strlen(suffix);
+
+                    if (input_pos + suffix_len < sizeof(input_buf)) {
+                        strcpy(input_buf + input_pos, suffix);
+                        input_pos += suffix_len;
+                    }
+                }
             } else if (input_pos < 255 && ch >= 32 && ch <= 126) {
-                input_buf[input_pos++] = ch;
+                input_buf[input_pos++] = (char)ch;
                 input_buf[input_pos] = '\0';
+
             } else if (ch == 27) {
                 app_state.running = 0;
             }
         }
+
         usleep(10000);
     }
 }
